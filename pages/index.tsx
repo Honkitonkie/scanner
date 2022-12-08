@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Group, Stack, Text, Image, Progress, Button } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { createWorker } from 'tesseract.js';
+import Webcam from "react-webcam";
 
 const Home = () => {
   const [imageData, setImageData] = useState<null | string>(null);
@@ -13,6 +14,19 @@ const Home = () => {
     };
     reader.readAsDataURL(file);
   };
+
+
+      const [image,setImage]=useState('');
+    const webcamRef = React.useRef(null);
+
+    
+    const capture = React.useCallback(
+        () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        setImage(imageSrc)
+        });
+
+
 
   const [progress, setProgress] = useState(0);
   const [progressLabel, setProgressLabel] = useState('idle');
@@ -61,6 +75,61 @@ const Home = () => {
           </Text>
         )}</Dropzone>
 
+                 <div className="webcam-container">
+            
+            <div className="webcam-img">
+                {/* {image == '' ? <Webcam
+              audio={false}
+              height={200}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              width={220}
+              videoConstraints={{
+                width: 220,
+                height: 200,
+                facingMode: "user"
+              }} */}
+              <input type="file" accept="image/*" capture="environment"></input>
+                {image == '' ? <Webcam
+              audio={false}
+              height={200}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              width={220}
+              videoConstraints={{
+                width: 220,
+                height: 200,
+                facingMode: "user"
+              }}
+                /> : <img src={image} />}
+            </div>
+            <div>
+                {image != '' ?
+                    <div>
+                    <button onClick={(e) => {
+                        e.preventDefault();
+                        setImage('')
+                    }}
+                        className="webcam-btn">
+                            Retake Image</button>
+                        {/* USE THIS PICTURE BUTTON */}
+                    <button onClick={(e) => {
+                        e.preventDefault();
+                        setImageData(image as string);
+                    }}
+                        className="webcam-btn">
+                            Use</button>
+                    </div> :
+                    <button onClick={(e) => {
+                        e.preventDefault();
+                        capture();
+                    }}
+                        className="webcam-btn">Capture</button>
+                }
+            </div>
+        </div>
+        
+        
         {!!imageData && <Image src={imageData} style={{ width: '100%' }} />}
       </Stack>
 
